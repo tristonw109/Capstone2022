@@ -5,7 +5,7 @@ from   tensorflow          import keras
 
 (train_ds, validation_ds, test_ds) = tfds.load(
     "cats_vs_dogs",
-    spilt=["train[:40%]", "train[40%:50%]","train[50%:60%]"],
+    split=["train[:40%]", "train[40%:50%]","train[50%:60%]"],
     as_supervised=True
 )
 
@@ -25,9 +25,9 @@ data_augmentation = keras.Sequential(
     [keras.layers.RandomFlip("horizontal"), keras.layers.RandomRotation(0.1),]
 )
 
-base_model = keras.application.VGG16(
-    weights='imagenet'
-    input_shape=(224,224,3)
+base_model = keras.applications.VGG16(
+    weights='imagenet',
+    input_shape=(224,224,3),
     include_top=False # do not include Imagenet classifer
 )
 
