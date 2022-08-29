@@ -50,10 +50,6 @@ model   = keras.Model(inputs, outputs)
 
 model.summary()
 
-# set-up model check pointing
-checkpoint = ModelCheckpoint(args["weights"], monitor="val_loss",save_best_only=True, verbose=1)
-callbacks = [checkpoint]
-
 # put the model together
 model.compile(
     optimizer=keras.optimizers.Adam(),
@@ -73,7 +69,7 @@ model.compile(
 )
 
 # set up checkpointing
-checkpoint = ModelCheckpoint(args["weights"], monitor="val_loss",save_best_only=True, verbose=1)
+checkpoint = ModelCheckpoint('./test_model.hdf5', monitor="val_loss",save_best_only=True, verbose=1)
 callbacks = [checkpoint]
 
 model.fit(train_ds, epochs=10, validation_data=validation_ds, callbacks=callbacks)
