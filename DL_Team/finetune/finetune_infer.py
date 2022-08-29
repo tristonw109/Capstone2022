@@ -1,5 +1,4 @@
 # USAGE
-# python shallownet_load.py --dataset ../datasets/animals --model shallownet_weights.hdf5
 
 # import the necessary packages
 from   preprocessing.imagetoarraypreprocessor import ImageToArrayPreprocessor
@@ -21,12 +20,11 @@ args = vars(ap.parse_args())
 # grab the list of images in the dataset then randomly sample
 # indexes into the image paths list
 print("[INFO] sampling images...")
-imagePaths = np.array(list(paths.list_images(args["dataset"])))
-idxs = np.random.randint(0, len(imagePaths), size=(10,))
-imagePaths = imagePaths[idxs]
+imagePaths = ['dataset/cat/_126313594_gettyimages-1217576289.jpg']
+
 
 # initialize the image preprocessors
-sp = SimplePreprocessor(32, 32)
+sp = SimplePreprocessor(224, 224)
 iap = ImageToArrayPreprocessor()
 
 # load the dataset from disk then scale the raw pixel intensities
@@ -38,10 +36,11 @@ data = data.astype("float32") / 255.0
 # load the pre-trained network
 print("[INFO] loading pre-trained network...")
 model = load_model(args["model"])
+model.summary()
 
 # make predictions on the images
 print("[INFO] predicting...")
-preds = model.predict(data, batch_size=64).argmax(axis=1)
+preds = model.predict(data).argmax(axis=1)
 print (preds)
 
 '''

@@ -45,7 +45,7 @@ x           = scale_layer(x)
 x       = base_model(x, training=False)
 x       = keras.layers.GlobalAveragePooling2D()(x)
 x       = keras.layers.Dropout(0.2)(x)  # Regularize with dropout
-outputs = keras.layers.Dense(1)(x)
+outputs = keras.layers.Dense(2)(x)
 model   = keras.Model(inputs, outputs)
 
 model.summary()
