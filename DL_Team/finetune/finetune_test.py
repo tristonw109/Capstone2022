@@ -2,7 +2,9 @@ import numpy                      as np
 import tensorflow                 as tf
 import tensorflow_datasets        as tfds
 from   tensorflow.keras.callbacks import ModelCheckpoint
+from   newoutput_layer            import OutputLayers
 from   tensorflow                 import keras
+from   keras.models               import Model
 
 (train_ds, validation_ds, test_ds) = tfds.load(
     "cats_vs_dogs",
@@ -33,24 +35,12 @@ base_model = keras.applications.VGG16(
 )
 
 # freeze the base model
-base_model.trainable = False
-print("[INFO] FREEZEING LAYERS")
+head = OutputLayers.build(D=256, baseModel=base_model, numClasses=2)
 
-inputs = keras.Input(shape=(224,224,3))
-x      = data_augmentation(inputs)
-
-scale_layer = keras.layers.Rescaling(scale=1 / 127.5, offset=-1)
-x           = scale_layer(x)
-
-x       = base_model(x, training=False)
-x       = keras.layers.GlobalAveragePooling2D()(x)
-x       = keras.layers.Dropout(0.2)(x)  # Regularize with dropout
-outputs = keras.layers.Dense(2)(x)
-model   = keras.Model(inputs, outputs)
-
+model = Model(inputs=base_model.input, outputs=head)
 model.summary()
 
-# put the model together
+'''# put the model together
 model.compile(
     optimizer=keras.optimizers.Adam(),
     loss=keras.losses.BinaryCrossentropy(from_logits=True),
@@ -73,3 +63,4 @@ checkpoint = ModelCheckpoint('./test_model.hdf5', monitor="val_loss",save_best_o
 callbacks = [checkpoint]
 
 model.fit(train_ds, epochs=10, validation_data=validation_ds, callbacks=callbacks)
+'''
