@@ -5,6 +5,7 @@ from   tensorflow.keras.callbacks import ModelCheckpoint
 from   keras.optimizers           import RMSprop
 from   keras.optimizers           import SGD
 from   newoutput_layer            import OutputLayers
+from   keras.layers               import Input
 from   tensorflow                 import keras
 from   keras.models               import Model
 
@@ -32,7 +33,7 @@ data_augmentation = keras.Sequential(
 
 base_model = keras.applications.VGG16(
     weights     = 'imagenet',
-    input_shape = (224,224,3),
+    input_tensor = Input(shape=(224,224,3))
     include_top = False # do not include Imagenet classifer
 )
 
@@ -49,7 +50,7 @@ for layer in base_model.layers:
 #  put the model together
 model.compile(loss="categorical_crossentropy", optimizer=RMSprop(lr=0.001), metrics=["accuracy"])
 
-model.fit(train_ds, epochs=20, validation_data=validation_ds)
+model.fit(train_ds,2, epochs=20, validation_data=validation_ds)
 
 predictions = model.predict(test_ds)
 print (predictions)
@@ -65,4 +66,4 @@ model.compile(loss="categorical_crossentropy", optimizer=SGD(lr=0.001), metrics=
 checkpoint = ModelCheckpoint('./test_model.hdf5', monitor="val_loss",save_best_only=True, verbose=1)
 callbacks = [checkpoint]
 
-model.fit(train_ds, epochs=100, validation_data=validation_ds, callbacks=callbacks)
+model.fit(train_ds,2, epochs=100, validation_data=validation_ds, callbacks=callbacks)
