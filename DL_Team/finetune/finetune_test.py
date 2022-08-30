@@ -2,6 +2,8 @@ import numpy                      as np
 import tensorflow                 as tf
 import tensorflow_datasets        as tfds
 from   tensorflow.keras.callbacks import ModelCheckpoint
+from   keras.optimizers           import RMSprop
+from   keras.optimizers           import SGD
 from   newoutput_layer            import OutputLayers
 from   tensorflow                 import keras
 from   keras.models               import Model
@@ -40,27 +42,27 @@ head = OutputLayers.build(D=256, baseModel=base_model, numClasses=2)
 model = Model(inputs=base_model.input, outputs=head)
 model.summary()
 
-'''# put the model together
-model.compile(
-    optimizer=keras.optimizers.Adam(),
-    loss=keras.losses.BinaryCrossentropy(from_logits=True),
-    metrics=[keras.metrics.BinaryAccuracy()],
-)
+print ('[INFO] FREEZING BASE MODEL LAYERS')
+for layer in base_model.layers:
+    layer.trainable = False
+
+#  put the model together
+model.compile(loss="categorical_crossentropy", optimizer=RMSprop(lr=0.001), metrics=["accuracy"])
 
 model.fit(train_ds, epochs=20, validation_data=validation_ds)
 
-base_model.trainable = True
-print("[INFO] UNFREEZING LAYERS")
+predictions = model.predict(test_ds)
+print (predictions)
 
-model.compile(
-    optimizer=keras.optimizers.Adam(1e-5),  # Low learning rate to avoid over fitting
-    loss=keras.losses.BinaryCrossentropy(from_logits=True),
-    metrics=[keras.metrics.BinaryAccuracy()],
-)
+
+print("[INFO] UNFREEZING LAYERS")
+for layer in base_model.layers:
+    layer.trainable = True
+
+model.compile(loss="categorical_crossentropy", optimizer=SGD(lr=0.001), metrics=["accuracy"])
 
 # set up checkpointing
 checkpoint = ModelCheckpoint('./test_model.hdf5', monitor="val_loss",save_best_only=True, verbose=1)
 callbacks = [checkpoint]
 
-model.fit(train_ds, epochs=10, validation_data=validation_ds, callbacks=callbacks)
-'''
+model.fit(train_ds, epochs=100, validation_data=validation_ds, callbacks=callbacks)
