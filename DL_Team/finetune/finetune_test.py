@@ -5,8 +5,8 @@ from   tensorflow.keras.callbacks import ModelCheckpoint
 from   tensorflow                 import keras
 
 (train_ds, validation_ds, test_ds) = tfds.load(
-    "cats_vs_dogs",
-    split=["train[:40%]", "train[40%:50%]","train[50%:60%]"],
+    "tf_flowers",
+    split=["train[:40%]", "train[50%:60%]","train[60%:80%]"],
     as_supervised=True
 )
 
@@ -43,9 +43,10 @@ scale_layer = keras.layers.Rescaling(scale=1 / 127.5, offset=-1)
 x           = scale_layer(x)
 
 x       = base_model(x, training=False)
-x       = keras.layers.GlobalAveragePooling2D()(x)
-x       = keras.layers.Dropout(0.2)(x)  # Regularize with dropout
-outputs = keras.layers.Dense(2)(x)
+x       = keras.layers.Flatten(name='flatten')(x)
+x       = keras.layers.Dense(256,activation="relu")(x)
+x       = keras.layers.Dropout(0.5)(x)  # Regularize with dropout
+outputs = keras.layers.Dense(5,activation="softmax")(x)
 model   = keras.Model(inputs, outputs)
 
 model.summary()
@@ -53,8 +54,8 @@ model.summary()
 # put the model together
 model.compile(
     optimizer=keras.optimizers.Adam(),
-    loss=keras.losses.BinaryCrossentropy(from_logits=True),
-    metrics=[keras.metrics.BinaryAccuracy()],
+    loss='sparse_categorical_crossentropy',
+    metrics=[tf.keras.metrics.SparseCategoricalAccuracy()],
 )
 
 model.fit(train_ds, epochs=20, validation_data=validation_ds)
@@ -64,12 +65,12 @@ print("[INFO] UNFREEZING LAYERS")
 
 model.compile(
     optimizer=keras.optimizers.Adam(1e-5),  # Low learning rate to avoid over fitting
-    loss=keras.losses.BinaryCrossentropy(from_logits=True),
-    metrics=[keras.metrics.BinaryAccuracy()],
+    loss='sparse_categorical_crossentropy',
+    metrics=[tf.keras.metrics.SparseCategoricalAccuracy()],
 )
 
 # set up checkpointing
 checkpoint = ModelCheckpoint('./test_model.hdf5', monitor="val_loss",save_best_only=True, verbose=1)
 callbacks = [checkpoint]
 
-model.fit(train_ds, epochs=10, validation_data=validation_ds, callbacks=callbacks)
+model.fit(train_ds, epochs=100, validation_data=validation_ds, callbacks=callbacks)
