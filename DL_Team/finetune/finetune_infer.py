@@ -50,6 +50,8 @@ for (i, imagePath) in enumerate(imagePaths):
 	# to our screen
 	image = cv2.imread(imagePath)
 	cv2.putText(image, "Label: {}".format(classes[preds[i]]),
-		(10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+		(10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
 	cv2.imshow("Image", image)
 	cv2.waitKey(0)
+
+print('[INFO] DONE')
