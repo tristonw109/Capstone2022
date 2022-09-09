@@ -20,8 +20,8 @@ def prepare_image(image, target_size=(224, 224), target_layout="NCWH"):
 
 classes = ['dandelion','daisy','tulips','sunflowers','roses']
 
-xml = '/home/triston/Capstone2022/DL_Team/test_model/test_model.xml'
-bin = '/home/triston/Capstone2022/DL_Team/test_model/test_model.bin'
+xml = './test_model/test_model.xml'
+bin = './test_model/test_model.bin'
 
 ie = IECore()
 
@@ -33,7 +33,7 @@ input_shape = input_data.shape # [1, 3, 300, 300]
 input_layout = input_data.layout # NCHW
 input_size = (input_shape[2], input_shape[3]) # (300, 300)
 
-exec_network = ie.load_network(network=network, device_name="CPU", num_requests=1)
+exec_network = ie.load_network(network=network, device_name="MYRAID", num_requests=1)
 
 print("[INFO] sampling images...")
 imagePaths = np.array(list(paths.list_images('./dataset')))
