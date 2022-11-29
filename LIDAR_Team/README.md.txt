@@ -7,4 +7,4 @@ Final Gold has two console arguments
 -d : Direction to turn. Left or Right
 
 
-Fina White just has port.
+Final White just has port.
